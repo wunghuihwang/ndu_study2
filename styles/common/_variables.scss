@@ -1,0 +1,294 @@
+// Breakpoints
+$BKlg: 1024;
+$BKmd: 769;
+$BKsm: 375;
+
+// media query
+@mixin large {
+	@media (min-width: #{$BKlg}px) {
+		@content;
+	}
+}
+@mixin medium {
+	@media (max-width: #{$BKlg - 1}px) {
+		@content;
+	}
+}
+@mixin small {
+	@media (max-width: #{$BKmd - 1}px) {
+		@content;
+	}
+}
+@mixin tiny {
+	@media (max-width: #{$BKsm - 1}px) {
+		@content;
+	}
+}
+@mixin customMedia($width) {
+	@media (max-width: #{$width - 1}px) {
+		@content;
+	}
+}
+
+// continer query
+@mixin largeC {
+	@container (min-width: #{$BKlg}px) {
+		@content;
+	}
+}
+@mixin mediumC {
+	@container (max-width: #{$BKlg - 1}px) {
+		@content;
+	}
+}
+@mixin smallC {
+	@container (max-width: #{$BKmd - 1}px) {
+		@content;
+	}
+}
+@mixin tinyC {
+	@container (max-width: #{$BKsm - 1}px) {
+		@content;
+	}
+}
+@mixin customContain($width) {
+	@container (max-width: #{$width - 1}px) {
+		@content;
+	}
+}
+
+// colors
+$Black: #000;
+$White: #fff;
+$BgColor: #fafafa;
+$Primary: #1c9da9;
+$Cyan100: #ecfdff;
+$Cyan500: #1c9da9;
+$Cyan600: #15767f;
+$Cyan700: #0e4d53;
+$Red100: #ffe5e6;
+$Red500: #da120d;
+$Red600: #ca3535;
+$Orange100: #ffe1d0;
+$Orange500: #ff7638;
+$Darkblue100: #f2f6fd;
+$Darkblue400: #4281da;
+$Darkblue500: #1c57a9;
+$Gray50: #f7f7f7;
+$Gray100: #efefef;
+$Gray200: #d9d9d9;
+$Gray300: #c9c9c9;
+$Gray400: #a9a9a9;
+$Gray500: #999999;
+$Gray600: #6a6a6a;
+$Gray700: #4d4d4d;
+$Gray800: #333333;
+$Gray900: #1a1a1a;
+$BlackAlpha100: rgba(0, 0, 0, 0.1);
+$BlackAlpha200: rgba(0, 0, 0, 0.2);
+$BlackAlpha300: rgba(0, 0, 0, 0.3);
+$BlackAlpha400: rgba(0, 0, 0, 0.4);
+$BlackAlpha500: rgba(0, 0, 0, 0.5);
+$BlackAlpha600: rgba(0, 0, 0, 0.6);
+$BlackAlpha700: rgba(0, 0, 0, 0.7);
+$BlackAlpha800: rgba(0, 0, 0, 0.8);
+$BlackAlpha900: rgba(0, 0, 0, 0.9);
+
+$Weights: (100, 200, 300, 400, 500, 600, 700, 800, 900, 1000);
+@mixin weight {
+	@each $weight in $Weights {
+		&.weight_#{$weight} {
+			font-weight: $weight;
+		}
+	}
+}
+
+// const common value
+$HEADER_HEIGHT: 70;
+$HEADER_HEIGHT_MOBILE: 56;
+
+// header media query
+$large: 1220;
+$medium: 1070;
+$small: 870;
+
+// footer height
+$FOOTER_HEIGHT: 226;
+$FOOTER_HEIGHT_M: 434;
+$FOOTER_HEIGHT_S: 466;
+
+// rem
+@function rem($size, $base: 16) {
+	@return #{$size / $base}rem;
+}
+
+// flex
+@mixin flex($justify: center, $align: center, $direction: row) {
+	display: flex;
+	justify-content: $justify;
+	align-items: $align;
+
+	@content;
+}
+
+// letter spacing
+@mixin letterSpacing($size) {
+	letter-spacing: calc($size / 100 * 1rem * -1);
+}
+
+// margin | padding / border-radius 4value
+@mixin responsive-value($property, $value1, $value2: null, $value3: null, $value4: null, $maxWidth, $important) {
+	@if ($value2 == null) {
+		#{$property}: calc(100vw * ($value1 / $maxWidth)) #{$important};
+		@media (min-width: #{$maxWidth}px) {
+			#{$property}: #{$value1}px #{$important};
+		}
+	} @else {
+		#{$property}: calc(100vw * ($value1 / $maxWidth))
+			#{if($value2 != 'auto', calc(100vw * ($value2 / $maxWidth)), 'auto')}
+			#{if($value3 != null, 'calc(100vw * (' + $value3 + ' / ' + $maxWidth + '))', '')}
+			#{if($value4 != null, 'calc(100vw * (' + $value4 + ' / ' + $maxWidth + '))', '')}
+			#{$important};
+		@media (min-width: #{$maxWidth}px) {
+			#{$property}: #{$value1}px #{if($value2 != 'auto', $value2 + 'px', 'auto')} #{if(
+					$value3 != null,
+					$value3 + 'px',
+					''
+				)} #{if($value4 != null, $value4 + 'px', '')} #{$important};
+		}
+	}
+}
+
+// media query
+@mixin media($key, $val1: null, $val2: null, $val3: null, $val4: null, $important: '', $maxWidth: $BKsm) {
+	@if ($key == border-radius) {
+		@if ($val2 == null) {
+			#{$key}: calc(100vw * ($val1 / $maxWidth)) #{$important};
+			@media (min-width: #{$maxWidth}px) {
+				#{$key}: #{$val1}px #{$important} #{$important};
+			}
+		} @else {
+			border-radius: calc(100vw * ($val1 / $maxWidth))
+				calc(100vw * ($val2 / $maxWidth))
+				calc(100vw * ($val3 / $maxWidth))
+				calc(100vw * ($val4 / $maxWidth))
+				#{$important};
+			@media (min-width: #{$maxWidth}px) {
+				border-radius: #{$val1}px #{$val2}px #{$val3}px #{$val4}px #{$important};
+			}
+		}
+	} @else if($key == padding or $key == margin) {
+		@include responsive-value($key, $val1, $val2, $val3, $val4, $maxWidth, $important);
+	} @else {
+		#{$key}: calc(100vw * ($val1 / $maxWidth)) #{$important};
+		@media (min-width: #{$maxWidth}px) {
+			#{$key}: #{$val1}px #{$important};
+		}
+	}
+}
+
+// calculation
+@mixin mediaCalc($key, $value1, $calc, $value2) {
+	#{$key}: calc(#{$value1} #{$calc} calc(100vw * (#{$value2} / #{$BKsm})));
+	@media (min-width: #{$BKsm}px) {
+		#{$key}: calc(#{$value1} #{$calc} #{$value2}px);
+	}
+}
+
+// container base
+// margin | padding / border-radius 4value
+@mixin responsive-value-container(
+	$property,
+	$value1,
+	$value2: null,
+	$value3: null,
+	$value4: null,
+	$maxWidth,
+	$important
+) {
+	@if ($value2 == null) {
+		#{$property}: calc(100vw * ($value1 / $maxWidth)) #{$important};
+		@container (min-width: #{$maxWidth}px) {
+			#{$property}: #{$value1}px #{$important};
+		}
+	} @else {
+		#{$property}: calc(100vw * ($value1 / $maxWidth))
+			#{if($value2 != 'auto', calc(100vw * ($value2 / $maxWidth)), 'auto')}
+			#{if($value3 != null, 'calc(100vw * (' + $value3 + ' / ' + $maxWidth + '))', '')}
+			#{if($value4 != null, 'calc(100vw * (' + $value4 + ' / ' + $maxWidth + '))', '')}
+			#{$important};
+		@container (min-width: #{$maxWidth}px) {
+			#{$property}: #{$value1}px #{if($value2 != 'auto', $value2 + 'px', 'auto')} #{if(
+					$value3 != null,
+					$value3 + 'px',
+					''
+				)} #{if($value4 != null, $value4 + 'px', '')} #{$important};
+		}
+	}
+}
+
+// container query
+@mixin contain($key, $val1: null, $val2: null, $val3: null, $val4: null, $important: '', $maxWidth: $BKsm) {
+	@if ($key == border-radius) {
+		@if ($val2 == null) {
+			#{$key}: calc(100vw * ($val1 / $maxWidth)) #{$important};
+
+			@container (min-width: #{$maxWidth}px) {
+				#{$key}: #{$val1}px #{$important} #{$important};
+			}
+		} @else {
+			border-radius: calc(100vw * ($val1 / $maxWidth))
+				calc(100vw * ($val2 / $maxWidth))
+				calc(100vw * ($val3 / $maxWidth))
+				calc(100vw * ($val4 / $maxWidth))
+				#{$important};
+
+			@container (min-width: #{$maxWidth}px) {
+				border-radius: #{$val1}px #{$val2}px #{$val3}px #{$val4}px #{$important};
+			}
+		}
+	} @else if($key == padding or $key == margin) {
+		@include responsive-value($key, $val1, $val2, $val3, $val4, $maxWidth, $important);
+	} @else {
+		#{$key}: calc(100vw * ($val1 / $maxWidth)) #{$important};
+
+		@container (min-width: #{$maxWidth}px) {
+			#{$key}: #{$val1}px #{$important};
+		}
+	}
+}
+
+// calculation
+@mixin containCalc($key, $value1, $calc, $value2) {
+	#{$key}: calc(#{$value1} #{$calc} calc(100vw * (#{$value2} / #{$BKsm})));
+
+	@container (min-width: #{$BKsm}px) {
+		#{$key}: calc(#{$value1} #{$calc} #{$value2}px);
+	}
+}
+
+// box shadow media query
+@mixin boxshadow($x, $y, $blur, $spread: 0, $color, $inset: '') {
+	@if ($inset== '') {
+		box-shadow: calc(100vw * ($x / $BKsm))
+			calc(100vw * ($y / $BKsm))
+			calc(100vw * ($blur / $BKsm))
+			calc(100vw * ($spread / $BKsm))
+			$color;
+
+		@media (min-width: #{$BKsm}px) {
+			box-shadow: #{$x}px #{$y}px #{$blur}px #{$spread}px #{$color};
+		}
+	} @else {
+		box-shadow: inset
+			calc(100vw * ($x / $BKsm))
+			calc(100vw * ($y / $BKsm))
+			calc(100vw * ($blur / $BKsm))
+			calc(100vw * ($spread / $BKsm))
+			$color;
+
+		@media (min-width: #{$BKsm}px) {
+			box-shadow: inset #{$x}px #{$y}px #{$blur}px #{$spread}px #{$color};
+		}
+	}
+}

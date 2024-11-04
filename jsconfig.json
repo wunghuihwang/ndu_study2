@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@api/*": ["./api/*"],
+			"@components/*": ["./components/*"],
+			"@constants/*": ["./constants/*"],
+			"@lib/*": ["./lib/*"],
+			"@pages/*": ["./pages/*"],
+			"@public/*": ["./public/*"],
+			"@queries/*": ["./queries/*"],
+			"@screens/*": ["./screens/*"],
+			"@store/*": ["./store/*"],
+			"@utils/*": ["./utils/*"]
+		}
+	}
+}
