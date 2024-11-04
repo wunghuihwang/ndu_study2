@@ -32,9 +32,12 @@ const HomeScreen = () => {
     // 파일 데이터 받기
     const { data, refetch, isLoading, isError } = useQuery({
         queryKey: ['DATA_SSS'], // 일단 임시로 넣었습니다. 
-        queryFn: getFileInfo 
+        queryFn: getFileInfo,
+        select: data => data.map(item => ({ id: item.id, name: item.name, key: item.key })), // 필요한 옵션만
+        refetchOnWindowFocus: true, // 데이터 실시간 업데이트
+        retry: 3, // 재시도
     }) 
-
+    console.log(data)
     // 클릭 이벤트 파일 데이터 보내기
 	const pushData = (event) => {
         event.preventDefault();
