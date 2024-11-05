@@ -1,14 +1,15 @@
-const token = 'NYAOC76.0BZSRD9-J5S48SY-HFN8HW1-YFQNBY3';
+const entries  = obj => Object.entries(obj).filter(([,val]) => (val ?? null) !== null);
 export const TryRequestGet = async (url) => {
+    // 아직 업로드도 못했습니다... 
+    // https://www.bytescale.com/docs/upload-api/ListUploadParts
     try {
         const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        })
-        return response
+            method: "GET",
+            headers: Object.fromEntries(entries({
+                "Authorization": `Bearer public_FW25cG7BUsgE3qandStPEpcPjDag`,
+            }))
+        });
+        return await response.json();
     } catch (error) {
         console.error('Error fetching genres:', error);
     }
@@ -16,16 +17,16 @@ export const TryRequestGet = async (url) => {
 
 
 export const TryRequestPost = async (url, body) => {
+    // https://www.bytescale.com/docs/upload-api/FormDataUpload
     try {
         const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`
-            },
-            body: body
-        })
-        return response;
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: Object.fromEntries(entries({
+                "Authorization": `Bearer public_FW25cG7BUsgE3qandStPEpcPjDag`
+            }))
+        });
+        return await response.json();
     } catch (error) {
         console.error('Error fetching genres:', error);
     }
