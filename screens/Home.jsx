@@ -1,140 +1,128 @@
-import { getFileInfo, postFileInfo, deleteFileInfo, putFileInfo } from "@api/main";
+import { postFileInfo, getFileInfo } from "@api/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-// import Link from "next/link";
-// import { useRouter } from "next/router";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 
-const HomeScreen = () => {
+function FileUploadPage() {
+	const [selectedFiles, setSelectedFiles] = useState([]); // 선택된 파일들을 저장하는 상태
+	const [uploadResults, setUploadResults] = useState([]); // 업로드 결과를 저장하는 상태
 
-    // 파일데이터
-	const [pushFileValue, setPushFileValue] = useState(null);
-	const [pushFileName, setPushFileName] = useState(null);
+	useEffect(() => {
+		console.log("uploadResults", uploadResults); // 업로드 결과가 업데이트될 때마다 콘솔에 출력
+	}, [uploadResults]);
 
-    // 파일 보내기
-	const mutation = useMutation({
-		mutationFn: (pushFileValue) => postFileInfo(pushFileValue),
-	})
+	// 파일 업로드를 처리하는 Mutation
+	const uploadFilesMutation = useMutation(postFileInfo, {
+		// 업로드 성공 시 실행되는 함수. 업로드 결과를 업데이트한다.
+		onSuccess: (data) => {
+            console.log(data)
+			setUploadResults((prevResults) => [...prevResults, data]); // 이전 업로드 결과에 새 결과 추가
+            console.log(uploadResults)
+		},
+		// 업로드 실패 시 실행되는 함수. 에러 메시지를 출력하고 결과 목록에 실패한 업로드 정보를 추가한다.
+		onError: (error) => {
+			console.error("파일 업로드 실패:", error);
+			setUploadResults((prevResults) => [...prevResults, { error: error.message }]);
+		},
+	});
 
-    // // 파일 삭제하기 
-    // const deleteMutation = useMutation({
-    //     mutationFn: (key) => deleteFileInfo(key),
-    // })
+	// 파일 선택 핸들러 - 사용자가 파일을 선택하면 파일 목록을 상태에 저장한다.
+	const handleFileChange = (e) => {
+		setSelectedFiles(Array.from(e.target.files)); // input에서 선택된 파일들을 배열로 변환하여 상태로 저장
+	};
 
-    // // 파일 변경하기
-    // const putMutation = useMutation({
-    //     mutationFn: ({key, formData}) => putFileInfo(key, formData)
-    // })
+	// 파일 업로드 버튼 클릭 핸들러 - 선택된 파일들을 업로드한다.
+	const handleUpload = () => {
+		if (selectedFiles.length > 0) {
+			setUploadResults([]); // 업로드 결과 초기화
+			selectedFiles.forEach((file) => {
+				// 각 파일을 formDataUpload 함수로 업로드 요청
+				uploadFilesMutation.mutate({
+					requestBody: file, // 업로드할 파일 본체
+					originalFileName: file.name, // 업로드할 파일의 원본 이름
+				});
+			});
+            
+		} else {
+			alert("파일을 선택하세요."); // 파일이 선택되지 않았을 경우 경고 메시지
+		}
+	};
 
-    // // 파일 데이터 받기
-    // const { data, refetch, isLoading, isError } = useQuery({
-    //     queryKey: ['DATA_SSS'], // 일단 임시로 넣었습니다. 
-    //     queryFn: getFileInfo,
-    //     select: (data) => {
-    //         return data?.map(item => ({
-    //             name: item.name ?? '',
-    //             key: item.key ?? '',
-    //         }));
-    //     },
-    //     refetchOnWindowFocus: true, // 데이터 실시간 업데이트
-    //     retry: 3, // 재시도
-    //     onError: (error) => {
-    //         console.log('Error fetching data:', error);
-    //     },
-    // }) 
+    const { data } = useQuery({
+        queryKey: ['fileData'],
+        queryFn: () => getFileInfo({ querystring: { folderPath: "/uploads/2024/11/06" } }),
+        select: (item) => item.items
+      });
 
-    
-    // 클릭 이벤트 파일 데이터 보내기
-	const pushData = (event) => {
-        event.preventDefault();
-        if (pushFileValue) {
-            const formData = new FormData();
-            formData.append('file', pushFileValue, pushFileName);
-            mutation.mutate(formData, {
-                onSuccess: (data) => {
-                    alert('파일 보내기 성공')
-                },
-                onError: (error) => {
-                    console.log('파일 보내기 실패', error)
-                    alert('파일 보내기 실패')
-                }
-            }); 
-        } else {
-            return;
-        }
-
-	}
-
-    // // 파일 데이터 추가
-    const handleChangeFileValue = (e) => {
-        setPushFileValue(e.target.files[0]); 
-        console.log(e)
-        setPushFileName(e.target.files[0].name);
-    };
-
-    // // 파일 데이터 삭제
-    // const handleDelete = (key) => {
-    //     deleteMutation.mutate(key, {
-    //         onSuccess: (data) => {
-    //             alert('파일 삭제 성공')
-    //             console.log(data)
-    //             refetch()
-    //         },
-    //         onError: (error) => {
-    //             console.log('파일 삭제 실패', error)
-    //             alert('파일 삭제 실패')
-    //         }
-    //     });
-    // }
-
-    // // 파일 데이터 변경
-    // const handleChange = (key) => {
-    //     if (!pushFileValue || !key) {
-    //         return;
-    //     }
-    //     const formData = new FormData();
-    //     formData.append('file', pushFileValue);
-
-        
-    //     putMutation.mutate({key, formData}, {
-    //         onSuccess: (data) => {
-    //             alert('파일 변경 성공')
-    //             console.log(data)
-    //         },
-    //         onError: (error) => {
-    //             console.log('파일 변경 실패', error)
-    //             alert('파일 변경 실패')
-    //         }
-    //     });
-    // }
+      useEffect(() => {
+        console.log('data', data)
+      }, [data])
 	return (
-        <>
-            <h1>File API 연습</h1>
-            <form action="">
-                <input type="file" onChange={handleChangeFileValue} />
-                <button onClick={pushData}>
-                    Go Test (with Querystring)
-                </button>
-            </form>
-            {/* {
-                isLoading && <p>Loading...</p> ||
-                isError && <p>isError...</p> ||
-                !isLoading && !isError &&
-                <ul className="file_wrap">
-                    {
-                        data &&
-                        data.map((item) => {
-                            return (
-                                <li key={item.key}>
-                                    <img src={`https://www.file.io/hM7v/download/${item.key}`} alt={item.name} />
-                                    <button onClick={() => handleDelete(item.key)}>삭제</button>
-                                    <button onClick={() => handleChange(item.key)}>변경</button>
-                                </li>
-                            )
-                        })
-                    } 
-                </ul>
-            } */}
-        </>
+		<div>
+			<h1>파일 멀티 업로드</h1>
+			<input
+				type="file"
+				multiple
+				onChange={handleFileChange} // 파일 선택 시 handleFileChange 실행
+			/>
+			<button
+				onClick={handleUpload} // 업로드 버튼 클릭 시 handleUpload 실행
+				disabled={uploadFilesMutation.isLoading} // 업로드 중일 때 버튼 비활성화
+				style={{ padding: 10, borderRadius: "0.5rem", backgroundColor: uploadFilesMutation.isLoading ? "#888" : "black", color: "white" }}
+			>
+				{/* 업로드 상태에 따라 버튼 텍스트 변경 */}
+				{uploadFilesMutation.isLoading ? "업로드 중..." : "업로드"}
+			</button>
+			{uploadResults?.length > 0 && (
+				// 업로드 결과가 존재할 경우 업로드 결과 표시
+				<>
+					<h2>업로드 결과</h2>
+					<ul style={{ display: "flex", width: "100vw", overflow: "auto" }}>
+						{uploadResults.map((result, index) => (
+							<li
+								key={index}
+								style={{ flex: 1, position: "relative", maxWidth: 300, overflow: "hidden", aspectRatio: "3 / 2" }}
+							>
+								{uploadFilesMutation.isError ? (
+									// 업로드 실패 시 에러 메시지 표시
+									<span style={{ color: "red" }}>업로드 실패: {result.error}</span>
+								) : (
+									// 업로드 성공 시 업로드된 이미지 표시
+									<Image
+										style={{ width: "100%", height: "100%", objectFit: "cover" }}
+										width={300}
+										height={200}
+										src={result.files[0].fileUrl} // 업로드된 파일의 URL
+										alt={result.files[0].filePath.split("/").pop()} // 파일 경로에서 파일명 추출하여 alt 텍스트로 사용
+									/>
+								)}
+							</li>
+						))}
+					</ul>
+				</>
+			)}
+            <h2>파일 목록</h2>
+            <ul>
+                {
+                    data.map((item, idx) => {
+                        return (
+                            <li key={idx}>
+                                <Image
+                                    style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                                    width={100}
+                                    height={100}
+                                    src={item.fileUrl} // 업로드된 파일의 URL
+                                    alt={item.filePath.split("/").pop()} // 파일 경로에서 파일명 추출하여 alt 텍스트로 사용
+                                />
+                        </li>
+                        )
+                    })
+                }
+                <li></li>
+            </ul>
+		</div>
 	);
-};
-export default HomeScreen;
+}
+
+  
+export default FileUploadPage;
