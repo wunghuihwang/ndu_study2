@@ -1,4 +1,5 @@
 const entries  = obj => Object.entries(obj).filter(([,val]) => (val ?? null) !== null);
+
 export const TryRequestGet = async (url, params) => {
     const query    = entries(params.querystring ?? {})
     .flatMap(([k,v]) => Array.isArray(v) ? v.map(v2 => [k,v2]) : [[k,v]])
@@ -19,6 +20,25 @@ export const TryRequestGet = async (url, params) => {
     }
 }
 
+export const TryRequestFolderListGet = async (url, params) => {
+    const query    = entries(params.querystring ?? {})
+    .flatMap(([k,v]) => Array.isArray(v) ? v.map(v2 => [k,v2]) : [[k,v]])
+    .map(kv => kv.join("=")).join("&");
+    try {
+        const response = await fetch(`${url}${query.length > 0 ? "?" : ""}${query}`, {
+            method: "GET",
+            headers: Object.fromEntries(entries({
+              "Authorization": `Bearer secret_FW25cG7D1C7f5ZmCRzgZFoy9n8Vk`,
+            }))
+          });
+          const result = await response.json();
+          if (Math.floor(response.status / 100) !== 2)
+            throw new Error(`Bytescale API Error: ${JSON.stringify(result)}`);
+          return result;
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+    }
+}
 
 export const TryRequestPost = async (url, params) => {
     try {
@@ -64,17 +84,39 @@ export const TryRequestPut = async (url, body) => {
     }
 }
 
-export const TryRequestDelete = async (url) => {
+export const TryRequestChoiceDelete = async (url, params) => {
     try {
         const response = await fetch(url, {
-            method: 'DELETE',
-            headers: {
-                accept: 'application/json',
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${token}`, 
-            }
-        })
-        return response;
+            method: "DELETE",
+            body: JSON.stringify(params.requestBody),
+            headers: Object.fromEntries(entries({
+              "Authorization": `Bearer secret_FW25cG7D1C7f5ZmCRzgZFoy9n8Vk`,
+              "Content-Type": "application/json",
+            }))
+          });
+          const result = await response.json();
+          if (Math.floor(response.status / 100) !== 2)
+            throw new Error(`Bytescale API Error: ${JSON.stringify(result)}`);
+          return result;
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+    }
+}
+
+export const TryRequestDelete = async (url, params) => {
+    try {
+        const response = await fetch(url, {
+            method: "DELETE",
+            body: JSON.stringify(params.requestBody),
+            headers: Object.fromEntries(entries({
+              "Authorization": `Bearer secret_FW25cG7D1C7f5ZmCRzgZFoy9n8Vk`,
+              "Content-Type": "application/json",
+            }))
+          });
+          const result = await response.json();
+          if (Math.floor(response.status / 100) !== 2)
+            throw new Error(`Bytescale API Error: ${JSON.stringify(result)}`);
+          return result;
     } catch (error) {
         console.error('Error fetching genres:', error);
     }

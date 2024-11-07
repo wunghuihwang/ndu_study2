@@ -1,4 +1,4 @@
-import { TryRequestGet, TryRequestPost, TryRequestDelete, TryRequestPut } from "@utils/TryRequest";
+import { TryRequestGet, TryRequestFolderListGet, TryRequestPost, TryRequestDelete, TryRequestChoiceDelete } from "@utils/TryRequest";
 
 
 const getFileInfo = async (parms) => {
@@ -7,6 +7,14 @@ const getFileInfo = async (parms) => {
     // folders/list api로 접근해서 가져왔습니다.!
     try {
         const response = await TryRequestGet(`https://api.bytescale.com/v2/accounts/FW25cG7/folders/list`, parms)
+        return response; 
+    } catch (err) {
+        console.log('error :', err)
+    }
+} 
+const getFolderList = async (parms) => {
+    try {
+        const response = await TryRequestFolderListGet(`https://api.bytescale.com/v2/accounts/FW25cG7/folders/list`, parms)
         return response; 
     } catch (err) {
         console.log('error :', err)
@@ -22,18 +30,23 @@ const postFileInfo = async (params) => {
     }
 } 
 
-// const deleteFileInfo = async (key) => {
-//     try {
-//         const response = await TryRequestDelete(`https://api.bytescale.com/v2/accounts/FW25cG7/uploads/${key}`)
-//         if(!response.ok) {
-//             throw new Error('Failed to delete file')
-//         }
-//         const data = await response.json();
-//         return data
-//     } catch (err) {
-//         console.log('error :', err)
-//     }
-// }
+const deleteChoiceFileInfo = async (params) => {
+    try {
+        const response = await TryRequestChoiceDelete(`https://api.bytescale.com/v2/accounts/FW25cG7/files/batch`, params)
+        return response
+    } catch (err) {
+        console.log('error :', err)
+    }
+}
+
+const deleteFileInfo = async (params) => {
+    try {
+        const response = await TryRequestDelete(`https://api.bytescale.com/v2/accounts/FW25cG7/folders`, params)
+        return response
+    } catch (err) {
+        console.log('error :', err)
+    }
+}
 
 // const putFileInfo = async (key, formData) => {
 //     try {
@@ -49,6 +62,8 @@ const postFileInfo = async (params) => {
 export {
     postFileInfo,
     getFileInfo,
-    // deleteFileInfo,
+    getFolderList,
+    deleteChoiceFileInfo,
+    deleteFileInfo,
     // putFileInfo
 }
